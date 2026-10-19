@@ -3,13 +3,13 @@ chcp 65001 >nul
 setlocal EnableExtensions
 
 rem ================================================================
-rem  Rayon FM - сборщик музыкального мода для ReSkate (skate.)
+rem  russiansoundcloud-music - сборщик музыкального мода для ReSkate (skate.)
 rem
 rem  Если игра стоит не в D:\RESKATE - поправь строку GAME ниже
 rem  (это папка, где лежит Skate.exe и папка Mods).
 rem ================================================================
-set "MOD_NAME=Rayon FM"
-set "MOD_DIR=Rayon_FM"
+set "MOD_NAME=russiansoundcloud-music"
+set "MOD_DIR=russiansoundcloud-music"
 set "GAME=D:\RESKATE"
 
 set "KIT=%~dp0"
@@ -18,10 +18,10 @@ set "MUSIC=%KIT%\music"
 if not "%~1"=="" set "MUSIC=%~1"
 set "OUT=%GAME%\Mods\%MOD_DIR%"
 
-title Rayon FM - сборка мода
+title russiansoundcloud-music - сборка мода
 echo.
 echo    ==============================
-echo         R A Y O N    F M
+echo      russiansoundcloud-music
 echo      музыкальный мод для ReSkate
 echo    ==============================
 echo.
