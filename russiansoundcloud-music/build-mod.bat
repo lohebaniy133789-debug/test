@@ -15,7 +15,9 @@ set "GAME=D:\RESKATE"
 set "KIT=%~dp0"
 set "KIT=%KIT:~0,-1%"
 set "MUSIC=%KIT%\music"
-if not "%~1"=="" set "MUSIC=%~1"
+set "MODE=build"
+if /i "%~1"=="/shuffle" set "MODE=shuffle"
+if "%MODE%"=="build" if not "%~1"=="" set "MUSIC=%~1"
 set "OUT=%GAME%\Mods\%MOD_DIR%"
 
 title russiansoundcloud-music - сборка мода
@@ -33,6 +35,7 @@ echo     Открой этот файл Блокнотом и поправь с�
 goto :fail
 :game_ok
 echo [ok] Игра: %GAME%
+if "%MODE%"=="shuffle" goto :shuffle_only
 
 rem ---------- ReSkate Music Packer ----------
 set "PACKER="
@@ -106,6 +109,13 @@ echo.
 if errorlevel 1 goto :build_fail
 if not exist "%OUT%\reskate-music.json" goto :build_fail
 
+rem ---------- порядок треков и совпадения с другими модами ----------
+echo.
+echo [..] Ставлю треки по порядку из order.txt и проверяю совпадения с другими модами...
+call :order -CheckClashes
+set "RC=%errorlevel%"
+if not "%RC%"=="0" if not "%RC%"=="3" echo [!] Порядок расставить не получилось - треки пойдут по алфавиту.
+
 echo.
 echo    ==============================
 echo     ГОТОВО! Мод лежит тут:
@@ -114,10 +124,34 @@ echo.
 echo     1. Открой лаунчер ReSkate - вкладка MODS
 echo     2. Включи "%MOD_NAME%"
 echo     3. В игре: меню музыки - плейлист "%MOD_NAME%"
+echo     4. Чтобы треки шли по порядку: в меню ReSkate на
+echo        странице MUSIC выключи "Shuffle playlists"
+echo.
+echo     Перемешать треки заново: shuffle.bat
 echo    ==============================
+if "%RC%"=="3" echo.
+if "%RC%"=="3" echo [!] ВНИМАНИЕ: есть совпадения с другим модом - смотри выше!
 echo.
 pause
 exit /b 0
+
+:shuffle_only
+if exist "%OUT%\reskate-music.json" goto :shuffle_go
+echo [!] Мод ещё не собран - сначала запусти build-mod.bat.
+goto :fail
+:shuffle_go
+call :order
+if errorlevel 1 goto :fail
+echo.
+echo [ok] Новый порядок готов. Если игра запущена - перезапусти её.
+echo.
+pause
+exit /b 0
+
+rem %1 = дополнительный ключ для playlist.ps1
+:order
+powershell -NoProfile -ExecutionPolicy Bypass -File "%KIT%\playlist.ps1" -ModDir "%OUT%" -OrderFile "%KIT%\order.txt" %~1
+exit /b %errorlevel%
 
 :build_fail
 echo.
